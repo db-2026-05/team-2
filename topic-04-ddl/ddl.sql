@@ -140,3 +140,10 @@ ALTER TABLE "book_reviews" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id")
 INSERT INTO "reservation_statuses" ("name") VALUES ('pending'), ('fulfilled'), ('cancelled');
 ALTER TABLE "book_genre" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "book_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genre" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_authors" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_authors" ADD FOREIGN KEY ("author_id") REFERENCES "authors" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_categories" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_categories" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+CREATE INDEX "idx_book_copies_status_id"      ON "book_copies" ("copy_status_id");
+CREATE INDEX "idx_borrowings_member_id"       ON "borrowings" ("member_id");
+CREATE INDEX "idx_borrowings_status_id"       ON "borrowings" ("status_id");
