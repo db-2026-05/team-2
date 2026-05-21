@@ -138,3 +138,5 @@ ALTER TABLE "reservation_items" ADD FOREIGN KEY ("book_copy_id") REFERENCES "boo
 ALTER TABLE "book_reviews" ADD FOREIGN KEY ("member_id") REFERENCES "members" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "book_reviews" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 INSERT INTO "reservation_statuses" ("name") VALUES ('pending'), ('fulfilled'), ('cancelled');
+ALTER TABLE "book_genre" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genre" ("id") DEFERRABLE INITIALLY IMMEDIATE;
