@@ -114,13 +114,21 @@ CREATE TABLE "book_reviews" (
 
 ALTER TABLE "book_copies" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "book_copies" ADD FOREIGN KEY ("copy_status_id") REFERENCES "copy_statuses" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "borrowings" ADD FOREIGN KEY ("member_id") REFERENCES "members" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "borrowings" ADD FOREIGN KEY ("status_id") REFERENCES "borrowing_statuses" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "borrowing_items" ADD FOREIGN KEY ("borrowing_id") REFERENCES "borrowings" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "borrowing_items" ADD FOREIGN KEY ("book_copy_id") REFERENCES "book_copies" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 INSERT INTO "copy_statuses" ("name") VALUES ('available'), ('borrowed'), ('reserved'), ('lost');
+INSERT INTO "borrowing_statuses" ("name") VALUES ('active'), ('returned'), ('overdue');
+CREATE UNIQUE INDEX "uq_borrowing_copy" ON "borrowing_items" ("borrowing_id", "book_copy_id");
 CREATE INDEX "idx_book_genre_genre_id"        ON "book_genre" ("genre_id");
 CREATE INDEX "idx_book_authors_author_id"     ON "book_authors" ("author_id");
 CREATE INDEX "idx_book_categories_cat_id"     ON "book_categories" ("category_id");
 CREATE INDEX "idx_book_copies_book_id"        ON "book_copies" ("book_id");
 CREATE INDEX "idx_book_reviews_book_id"       ON "book_reviews" ("book_id");
 CREATE INDEX "idx_res_items_res_book" ON "reservation_items" ("reservation_id", "book_id");
+CREATE INDEX "idx_reservation_items_book_id"  ON "reservation_items" ("book_id");
+CREATE INDEX "idx_reservation_items_copy_id"  ON "reservation_items" ("book_copy_id");
 CREATE UNIQUE INDEX "uq_one_review_per_book" ON "book_reviews" ("member_id", "book_id");
 ALTER TABLE "reservations" ADD FOREIGN KEY ("member_id") REFERENCES "members" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "reservations" ADD FOREIGN KEY ("status_id") REFERENCES "reservation_statuses" ("id") DEFERRABLE INITIALLY IMMEDIATE;
