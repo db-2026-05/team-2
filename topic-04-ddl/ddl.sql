@@ -39,3 +39,4 @@ CREATE TABLE "book_categories" (
   "category_id" int,
   PRIMARY KEY ("book_id", "category_id")
 );
+
