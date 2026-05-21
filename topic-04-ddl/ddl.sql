@@ -62,3 +62,12 @@ CREATE TABLE "book_copies" (
   "barcode" varchar(30) UNIQUE NOT NULL,
   "copy_status_id" int NOT NULL
 );
+
+ALTER TABLE "book_copies" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_copies" ADD FOREIGN KEY ("copy_status_id") REFERENCES "copy_statuses" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+INSERT INTO "copy_statuses" ("name") VALUES ('available'), ('borrowed'), ('reserved'), ('lost');
+CREATE INDEX "idx_book_genre_genre_id"        ON "book_genre" ("genre_id");
+CREATE INDEX "idx_book_authors_author_id"     ON "book_authors" ("author_id");
+CREATE INDEX "idx_book_categories_cat_id"     ON "book_categories" ("category_id");
+CREATE INDEX "idx_book_copies_book_id"        ON "book_copies" ("book_id");
+CREATE INDEX "idx_book_reviews_book_id"       ON "book_reviews" ("book_id");
