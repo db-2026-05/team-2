@@ -24,8 +24,8 @@ CREATE TABLE "authors" (
 );
 
 CREATE TABLE "book_authors" (
-  "book_id" int,
-  "author_id" int,
+  "book_id" int NOT NULL,
+  "author_id" int NOT NULL,
   PRIMARY KEY ("book_id", "author_id")
 );
 
@@ -35,8 +35,8 @@ CREATE TABLE "categories" (
 );
 
 CREATE TABLE "book_categories" (
-  "book_id" int,
-  "category_id" int,
+  "book_id" int NOT NULL,
+  "category_id" int NOT NULL,
   PRIMARY KEY ("book_id", "category_id")
 );
 
