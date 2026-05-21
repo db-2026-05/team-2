@@ -114,6 +114,8 @@ CREATE TABLE "book_reviews" (
 
 CREATE UNIQUE INDEX "uq_borrowing_copy" ON "borrowing_items" ("borrowing_id", "book_copy_id");
 CREATE UNIQUE INDEX "uq_one_review_per_book" ON "book_reviews" ("member_id", "book_id");
+CREATE UNIQUE INDEX "uq_borrowing_copy_active" ON "borrowing_items" ("book_copy_id")
+  WHERE return_date IS NULL;
 
 ALTER TABLE "book_copies" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "book_copies" ADD FOREIGN KEY ("copy_status_id") REFERENCES "copy_statuses" ("id") DEFERRABLE INITIALLY IMMEDIATE;
@@ -153,5 +155,3 @@ CREATE INDEX "idx_book_reviews_book_id"       ON "book_reviews" ("book_id");
 CREATE INDEX "idx_res_items_res_book" ON "reservation_items" ("reservation_id", "book_id");
 CREATE INDEX "idx_reservation_items_book_id"  ON "reservation_items" ("book_id");
 CREATE INDEX "idx_reservation_items_copy_id"  ON "reservation_items" ("book_copy_id");
-CREATE UNIQUE INDEX "uq_borrowing_copy_active" ON "borrowing_items" ("book_copy_id")
-  WHERE return_date IS NULL;
