@@ -4,7 +4,7 @@ Table books {
   isbn             varchar(17)  [unique, not null]
   publication_year smallint
 
-  checks {
+  constraints {
     `publication_year BETWEEN 1000 AND 2100` [name: 'chk_pub_year']
   }
 }
