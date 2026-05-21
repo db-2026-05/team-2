@@ -112,15 +112,38 @@ CREATE TABLE "book_reviews" (
   CONSTRAINT "chk_rate" CHECK (rate BETWEEN 1 AND 5)
 );
 
+CREATE UNIQUE INDEX "uq_borrowing_copy" ON "borrowing_items" ("borrowing_id", "book_copy_id");
+
 ALTER TABLE "book_copies" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "book_copies" ADD FOREIGN KEY ("copy_status_id") REFERENCES "copy_statuses" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "borrowings" ADD FOREIGN KEY ("member_id") REFERENCES "members" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "borrowings" ADD FOREIGN KEY ("status_id") REFERENCES "borrowing_statuses" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "borrowing_items" ADD FOREIGN KEY ("borrowing_id") REFERENCES "borrowings" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE "borrowing_items" ADD FOREIGN KEY ("book_copy_id") REFERENCES "book_copies" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "reservations" ADD FOREIGN KEY ("member_id") REFERENCES "members" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "reservations" ADD FOREIGN KEY ("status_id") REFERENCES "reservation_statuses" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "reservation_items" ADD FOREIGN KEY ("reservation_id") REFERENCES "reservations" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "reservation_items" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "reservation_items" ADD FOREIGN KEY ("book_copy_id") REFERENCES "book_copies" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_reviews" ADD FOREIGN KEY ("member_id") REFERENCES "members" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_reviews" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_genre" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genre" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_authors" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_authors" ADD FOREIGN KEY ("author_id") REFERENCES "authors" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_categories" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "book_categories" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+
 INSERT INTO "copy_statuses" ("name") VALUES ('available'), ('borrowed'), ('reserved'), ('lost');
 INSERT INTO "borrowing_statuses" ("name") VALUES ('active'), ('returned'), ('overdue');
-CREATE UNIQUE INDEX "uq_borrowing_copy" ON "borrowing_items" ("borrowing_id", "book_copy_id");
+INSERT INTO "reservation_statuses" ("name") VALUES ('pending'), ('fulfilled'), ('cancelled');
+
+CREATE INDEX "idx_book_copies_status_id"      ON "book_copies" ("copy_status_id");
+CREATE INDEX "idx_borrowings_member_id"       ON "borrowings" ("member_id");
+CREATE INDEX "idx_borrowings_status_id"       ON "borrowings" ("status_id");
+CREATE INDEX "idx_borrowing_items_copy_id"    ON "borrowing_items" ("book_copy_id");
+CREATE INDEX "idx_reservations_member_id"     ON "reservations" ("member_id");
+CREATE INDEX "idx_reservations_status_id"     ON "reservations" ("status_id");
 CREATE INDEX "idx_book_genre_genre_id"        ON "book_genre" ("genre_id");
 CREATE INDEX "idx_book_authors_author_id"     ON "book_authors" ("author_id");
 CREATE INDEX "idx_book_categories_cat_id"     ON "book_categories" ("category_id");
@@ -130,24 +153,3 @@ CREATE INDEX "idx_res_items_res_book" ON "reservation_items" ("reservation_id", 
 CREATE INDEX "idx_reservation_items_book_id"  ON "reservation_items" ("book_id");
 CREATE INDEX "idx_reservation_items_copy_id"  ON "reservation_items" ("book_copy_id");
 CREATE UNIQUE INDEX "uq_one_review_per_book" ON "book_reviews" ("member_id", "book_id");
-ALTER TABLE "reservations" ADD FOREIGN KEY ("member_id") REFERENCES "members" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "reservations" ADD FOREIGN KEY ("status_id") REFERENCES "reservation_statuses" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "reservation_items" ADD FOREIGN KEY ("reservation_id") REFERENCES "reservations" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "reservation_items" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "reservation_items" ADD FOREIGN KEY ("book_copy_id") REFERENCES "book_copies" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "book_reviews" ADD FOREIGN KEY ("member_id") REFERENCES "members" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "book_reviews" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-INSERT INTO "reservation_statuses" ("name") VALUES ('pending'), ('fulfilled'), ('cancelled');
-ALTER TABLE "book_genre" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "book_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genre" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "book_authors" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "book_authors" ADD FOREIGN KEY ("author_id") REFERENCES "authors" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "book_categories" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-ALTER TABLE "book_categories" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id") DEFERRABLE INITIALLY IMMEDIATE;
-CREATE INDEX "idx_book_copies_status_id"      ON "book_copies" ("copy_status_id");
-CREATE INDEX "idx_borrowings_member_id"       ON "borrowings" ("member_id");
-CREATE INDEX "idx_borrowings_status_id"       ON "borrowings" ("status_id");
-
-CREATE INDEX "idx_borrowing_items_copy_id"    ON "borrowing_items" ("book_copy_id");
-CREATE INDEX "idx_reservations_member_id"     ON "reservations" ("member_id");
-CREATE INDEX "idx_reservations_status_id"     ON "reservations" ("status_id");
