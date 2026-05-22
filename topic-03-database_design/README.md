@@ -79,3 +79,34 @@ Each team member must record a **short video (~2 minutes)** describing:
 > Video links **must be submitted** as part of the graded material alongside your code and documentation.
 
 ---
+
+## Опис структури бази даних
+
+### MVP таблиці
+
+| Таблиця | Опис | Основні поля | PK | FK |
+|---|---|---|---|---|
+| `members` | Читачі бібліотеки та їх контактна інформація | `id`, `first_name`, `last_name`, `email`, `login`, `password_hash`, `phone`, `address` | `id` | — |
+| `books` | Основна інформація про книги | `id`, `title`, `isbn`, `publication_year` | `id` | — |
+| `borrowings` | Операції видачі та повернення книг | `id`, `member_id`, `borrowing_date`, `due_date`, `return_date`, `status_id` | `id` | `member_id → members.id`, `status_id → borrowing_statuses.id` |
+
+### Final Version таблиці
+
+| Таблиця | Опис | Основні поля | PK | FK |
+|---|---|---|---|---|
+| `authors` | Автори книг | `id`, `first_name`, `last_name` | `id` | — |
+| `book_authors` | Зв’язок книг з авторами | `book_id`, `author_id` | `book_id + author_id` | `book_id → books.id`, `author_id → authors.id` |
+| `genres` | Довідник жанрів | `id`, `name` | `id` | — |
+| `book_genres` | Зв’язок книг з жанрами | `book_id`, `genre_id` | `book_id + genre_id` | `book_id → books.id`, `genre_id → genres.id` |
+| `categories` | Довідник категорій | `id`, `name` | `id` | — |
+| `book_categories` | Зв’язок книг з категоріями | `book_id`, `category_id` | `book_id + category_id` | `book_id → books.id`, `category_id → categories.id` |
+| `copy_statuses` | Довідник статусів примірників | `id`, `name` | `id` | — |
+| `book_copies` | Фізичні примірники книг | `id`, `book_id`, `barcode`, `copy_status_id` | `id` | `book_id → books.id`, `copy_status_id → copy_statuses.id` |
+| `borrowing_statuses` | Довідник статусів видачі | `id`, `name` | `id` | — |
+| `borrowing_items` | Конкретні примірники в межах видачі | `id`, `borrowing_id`, `book_copy_id` | `id` | `borrowing_id → borrowings.id`, `book_copy_id → book_copies.id` |
+| `reservation_statuses` | Довідник статусів резервування | `id`, `name` | `id` | — |
+| `reservations` | Резервування книг читачами | `id`, `member_id`, `reservation_date`, `status_id` | `id` | `member_id → members.id`, `status_id → reservation_statuses.id` |
+| `reservation_items` | Книги або примірники в резервуванні | `id`, `reservation_id`, `book_id`, `book_copy_id`, `reservation_amount` | `id` | `reservation_id → reservations.id`, `book_id → books.id`, `book_copy_id → book_copies.id` |
+| `book_reviews` | Відгуки та оцінки книг | `id`, `member_id`, `book_id`, `review_text`, `created_at`, `rate` | `id` | `member_id → members.id`, `book_id → books.id` |
+
+---

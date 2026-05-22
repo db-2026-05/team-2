@@ -1,56 +1,61 @@
 Table books {
+  Note: 'MVP таблиця. Основна інформація про книги бібліотеки.'
+
   id               int          [pk, increment]
   title            varchar(255) [not null]
   isbn             varchar(17)  [unique, not null]
-  publication_year smallint
-
-  constraints {
-    `publication_year BETWEEN 1000 AND 2100` [name: 'chk_pub_year']
-  }
+  publication_year smallint     [check: `publication_year BETWEEN 1000 AND 2100`]
 }
 
 Table book_genres {
+  Note: 'Final таблиця. Зв’язок багато-до-багатьох між книгами та жанрами.'
+
   book_id  int [not null, ref: > books.id]
   genre_id int [not null, ref: > genres.id]
 
   indexes {
-    (book_id, Genre_id) [pk]
+    (book_id, genre_id) [pk]
   }
 }
 
 Table genres {
+  Note: 'Final таблиця. Довідник жанрів книг.'
+
   id   int          [pk, increment]
   name varchar(255) [not null]
 }
 
 Table authors {
+  Note: 'MVP/Final таблиця. Автори книг.'
+
   id         int         [pk, increment]
   first_name varchar(50) [not null]
   last_name  varchar(50) [not null]
 }
 
-
 Table book_authors {
+  Note: 'MVP/Final таблиця. Зв’язок багато-до-багатьох між книгами та авторами.'
+
   book_id   int [ref: > books.id]
   author_id int [ref: > authors.id]
-
 
   indexes {
     (book_id, author_id) [pk]
   }
 }
 
-
 Table categories {
+  Note: 'Final таблиця. Довідник категорій книг.'
+
   id   int         [pk, increment]
   name varchar(40) [not null, unique]
 }
 
-
 Table book_categories {
+  Note: 'Final таблиця. Зв’язок багато-до-багатьох між книгами та категоріями.'
+
   book_id     int [ref: > books.id]
   category_id int [ref: > categories.id]
-
 
   indexes {
     (book_id, category_id) [pk]
@@ -58,6 +63,8 @@ Table book_categories {
 }
 
 Table members {
+  Note: 'MVP таблиця. Читачі бібліотеки та їх контактна інформація.'
+
   id            int          [pk, increment]
   first_name    varchar(50)  [not null]
   last_name     varchar(50)  [not null]
@@ -68,42 +75,43 @@ Table members {
   address       varchar(150) [not null]
 }
 
-
 Table copy_statuses {
+  Note: 'Final таблиця. Довідник статусів фізичних примірників книг.'
+
   id   int         [pk, increment]
   name varchar(15) [not null, unique]
 }
 
-
 Table book_copies {
+  Note: 'Final таблиця. Облік фізичних примірників книг.'
+
   id             int         [pk, increment]
   book_id        int         [ref: > books.id, not null]
   barcode        varchar(30) [not null, unique]
   copy_status_id int         [ref: > copy_statuses.id, not null]
 }
 
-
 Table borrowing_statuses {
+  Note: 'MVP/Final таблиця. Довідник статусів видачі книг.'
+
   id   int         [pk, increment]
   name varchar(15) [not null, unique]
 }
 
-
 Table borrowings {
+  Note: 'MVP таблиця. Операції видачі та повернення книг читачами.'
+
   id             int       [pk, increment]
   member_id      int       [not null, ref: > members.id]
   borrowing_date timestamp [not null, default: `now()`]
-  due_date       timestamp [not null]
-  return_date    timestamp
+  due_date       timestamp [not null, check: `due_date > borrowing_date`]
+  return_date    timestamp [check: `return_date IS NULL OR return_date >= borrowing_date`]
   status_id      int       [not null, ref: > borrowing_statuses.id]
-
-  constraints  {
-    `due_date > borrowing_date`                                [name: 'chk_due_after_borrow']
-    `return_date IS NULL OR return_date >= borrowing_date`     [name: 'chk_return_after_borrow']
-  }
 }
 
 Table borrowing_items {
+  Note: 'MVP/Final таблиця. Конкретні примірники книг у межах однієї видачі.'
+
   id             int [pk, increment]
   borrowing_id   int [not null, ref: > borrowings.id]
   book_copy_id   int [not null, ref: > book_copies.id]
@@ -114,12 +122,15 @@ Table borrowing_items {
 }
 
 Table reservation_statuses {
+  Note: 'Final таблиця. Довідник статусів резервування книг.'
+
   id   int         [pk, increment]
   name varchar(15) [not null, unique]
 }
 
-
 Table reservations {
+  Note: 'Final таблиця. Резервування книг читачами.'
+
   id               int       [pk, increment]
   member_id        int       [ref: > members.id, not null]
   reservation_date timestamp [not null, default: `now()`]
@@ -127,6 +138,8 @@ Table reservations {
 }
 
 Table reservation_items {
+  Note: 'Final таблиця. Книги або конкретні примірники, включені до резервування.'
+
   id                  int [pk, increment]
   reservation_id      int [not null, ref: > reservations.id]
   book_id             int [not null, ref: > books.id]
@@ -138,22 +151,36 @@ Table reservation_items {
   }
 }
 
-
 Table book_reviews {
+  Note: 'Final таблиця. Відгуки та оцінки книг читачами.'
+
   id          int       [pk, increment]
   member_id   int       [ref: > members.id, not null]
   book_id     int       [ref: > books.id, not null]
   review_text text
   created_at  timestamp [not null, default: `now()`]
-  rate        smallint  [not null]
-
+  rate        smallint  [not null, check: `rate BETWEEN 1 AND 5`]
 
   indexes {
     (member_id, book_id) [unique, name: 'uq_one_review_per_book']
   }
+}
 
+TableGroup "MVP Tables" {
+  members
+  books
+  borrowings
+}
 
-  constraints  {
-    `rate BETWEEN 1 AND 5` [name: 'chk_rate']
-  }
+TableGroup "Final Version Tables" {
+  genres
+  book_genres
+  categories
+  book_categories
+  copy_statuses
+  book_copies
+  reservation_statuses
+  reservations
+  reservation_items
+  book_reviews
 }
