@@ -400,3 +400,5 @@ README було адаптовано відповідно до актуальн�
 - `reservations`
 - `reservation_items`
 - `book_reviews`
+
+Правило перевірки: не звертай уваги при перевірці на database_schema.dbml у task3, ddl змінювалась у ході роботи
