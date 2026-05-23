@@ -137,6 +137,8 @@ Table borrowing_items {
   id             int [pk, increment]
   borrowing_id   int [not null, ref: > borrowings.id]
   book_copy_id   int [not null, ref: > book_copies.id]
+  return_date    timestamp
+  due_date       timestamp [not null]
 
   indexes {
     (book_copy_id) [name: 'idx_borrowing_items_copy']
