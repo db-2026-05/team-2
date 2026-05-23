@@ -51,13 +51,7 @@ CREATE TABLE "book_genre" (
   "book_id" int NOT NULL,   -- Посилання на книгу
   "genre_id" int NOT NULL,  -- Посилання на жанр
 
-  PRIMARY KEY ("book_id", "genre_id"),
-
-  FOREIGN KEY ("book_id") REFERENCES "books" ("id")
-    DEFERRABLE INITIALLY IMMEDIATE,
-
-  FOREIGN KEY ("genre_id") REFERENCES "genres" ("id")
-    DEFERRABLE INITIALLY IMMEDIATE
+  PRIMARY KEY ("book_id", "genre_id")
 );
 
 
@@ -156,9 +150,13 @@ CREATE TABLE "members" (
   "last_name" varchar(50) NOT NULL,                      -- Прізвище читача
   "email" varchar(100) UNIQUE NOT NULL,                  -- Email користувача
   "login" varchar(100) UNIQUE NOT NULL,                  -- Логін користувача
-  "password_hash" varchar(128) NOT NULL,                 -- Хеш пароля
+  "password_hash" varchar(64) NOT NULL,                 -- Хеш пароля
   "phone" varchar(20) NOT NULL,                          -- Телефон
   "address" varchar(150) NOT NULL                        -- Адреса
+  CONSTRAINT "chk_login_length" CHECK (char_length(login) >= 3),
+  CONSTRAINT "chk_phone_length" CHECK (char_length(phone) >= 10),
+  CONSTRAINT "chk_address_length" CHECK (char_length(address) >= 5),
+  CONSTRAINT "chk_password_hash_length" CHECK (char_length(password_hash) >= 64)
 );
 
 
@@ -244,7 +242,6 @@ CREATE TABLE "borrowing_items" (
   "book_copy_id" int NOT NULL,                           -- Посилання на примірник
   "return_date" timestamp,                               -- Фактична дата повернення
   "due_date" timestamp NOT NULL                          -- Кінцева дата повернення
-  CHECK (due_date > borrowing_date)
 );
 
 
@@ -338,7 +335,7 @@ ALTER TABLE "book_genre" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") O
 -- автоматично видаляються його зв’язки з книгами.
 -- FK гарантує, що книга може бути прив’язана
 -- лише до існуючого жанру.
-ALTER TABLE "book_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genre" ("id") ON DELETE CASCADE;
+ALTER TABLE "book_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genres" ("id") ON DELETE CASCADE;
 
 -- Пошук книг за жанром
 CREATE INDEX "idx_book_genre_genre_id" ON "book_genre" ("genre_id");
