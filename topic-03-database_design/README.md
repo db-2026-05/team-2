@@ -10,7 +10,7 @@
 | `books` | Основна інформація про книги | `id`, `title`, `isbn`, `publication_year` | `id` | — |
 | `borrowings` | Операції видачі та повернення книг читачами | `id`, `member_id`, `borrowing_date`, `due_date`, `return_date`, `status_id`, `created_at`, `updated_at` | `id` | `member_id → members.id`, `status_id → borrowing_statuses.id` |
 | `authors` | Автори книг | `id`, `first_name`, `last_name` | `id` | — |
-| `books_authors` | Зв’язок багато-до-багатьох між книгами та авторами | `book_id`, `author_id` | `book_id + author_id` | `book_id → books.id`, `author_id → authors.id` |
+| `book_authors` | Зв’язок багато-до-багатьох між книгами та авторами | `book_id`, `author_id` | `book_id + author_id` | `book_id → books.id`, `author_id → authors.id` |
 
 ---
 
@@ -19,13 +19,13 @@
 | Таблиця | Опис | Основні поля | PK | FK |
 |---|---|---|---|---|
 | `genres` | Довідник жанрів книг | `id`, `name` | `id` | — |
-| `book_genres` | Зв’язок книг з жанрами | `book_id`, `genre_id` | `book_id + genre_id` | `book_id → books.id`, `genre_id → genres.id` |
+| `book_genre` | Зв’язок книг з жанрами | `book_id`, `genre_id` | `book_id + genre_id` | `book_id → books.id`, `genre_id → genres.id` |
 | `categories` | Довідник категорій книг | `id`, `name` | `id` | — |
 | `book_categories` | Зв’язок книг з категоріями | `book_id`, `category_id` | `book_id + category_id` | `book_id → books.id`, `category_id → categories.id` |
 | `copy_statuses` | Довідник статусів фізичних примірників книг | `id`, `name` | `id` | — |
 | `book_copies` | Облік фізичних примірників книг | `id`, `book_id`, `barcode`, `copy_status_id` | `id` | `book_id → books.id`, `copy_status_id → copy_statuses.id` |
 | `borrowing_statuses` | Довідник статусів видачі книг | `id`, `name` | `id` | — |
-| `borrowing_items` | Конкретні примірники книг у межах однієї видачі | `id`, `borrowing_id`, `book_copy_id` | `id` | `borrowing_id → borrowings.id`, `book_copy_id → book_copies.id` |
+| `borrowing_items` | Конкретні примірники книг у межах однієї видачі | `id`, `borrowing_id`, `book_copy_id`, `return_date`, `due_date` | `id` | `borrowing_id → borrowings.id`, `book_copy_id → book_copies.id` |
 | `reservation_statuses` | Довідник статусів резервування книг | `id`, `name` | `id` | — |
 | `reservations` | Резервування книг читачами | `id`, `member_id`, `reservation_date`, `status_id`, `created_at`, `updated_at` | `id` | `member_id → members.id`, `status_id → reservation_statuses.id` |
 | `reservation_items` | Книги або конкретні примірники, включені до резервування | `id`, `reservation_id`, `book_id`, `book_copy_id` | `id` | `reservation_id → reservations.id`, `book_id → books.id`, `book_copy_id → book_copies.id` |
@@ -76,3 +76,32 @@
 
 ### `book_reviews`
 - `uq_one_review_per_book`
+
+
+## Оновлення DBML ↔ DDL синхронізації
+
+### Оновлені таблиці
+- `book_authors` — приведено до єдиного найменування між DBML та DDL
+- `book_genre` — приведено до єдиного найменування між DBML та DDL
+- `borrowing_items` — додано поля:
+  - `return_date`
+  - `due_date`
+
+### Оновлені перевірки та обмеження
+#### `members`
+- `char_length(login) >= 3`
+- `char_length(phone) >= 10`
+- `char_length(address) >= 5`
+- `char_length(password_hash) >= 64`
+
+#### `borrowings`
+- `due_date > borrowing_date`
+- `return_date IS NULL OR return_date >= borrowing_date`
+
+#### `book_reviews`
+- `rate BETWEEN 1 AND 5`
+
+### Оновлені індекси
+#### `borrowing_items`
+- `idx_borrowing_items_copy`
+- `uq_borrowing_copy`
