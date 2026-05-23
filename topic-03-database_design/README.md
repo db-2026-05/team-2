@@ -89,13 +89,13 @@ Each team member must record a **short video (~2 minutes)** describing:
 | `members` | Читачі бібліотеки та їх контактна інформація | `id`, `first_name`, `last_name`, `email`, `login`, `password_hash`, `phone`, `address` | `id` | — |
 | `books` | Основна інформація про книги | `id`, `title`, `isbn`, `publication_year` | `id` | — |
 | `borrowings` | Операції видачі та повернення книг | `id`, `member_id`, `borrowing_date`, `due_date`, `return_date`, `status_id` | `id` | `member_id → members.id`, `status_id → borrowing_statuses.id` |
+| `authors` | Автори книг | `id`, `first_name`, `last_name` | `id` | — |
+| `book_authors` | Зв’язок книг з авторами | `book_id`, `author_id` | `book_id + author_id` | `book_id → books.id`, `author_id → authors.id` |
 
 ### Final Version таблиці
 
 | Таблиця | Опис | Основні поля | PK | FK |
 |---|---|---|---|---|
-| `authors` | Автори книг | `id`, `first_name`, `last_name` | `id` | — |
-| `book_authors` | Зв’язок книг з авторами | `book_id`, `author_id` | `book_id + author_id` | `book_id → books.id`, `author_id → authors.id` |
 | `genres` | Довідник жанрів | `id`, `name` | `id` | — |
 | `book_genres` | Зв’язок книг з жанрами | `book_id`, `genre_id` | `book_id + genre_id` | `book_id → books.id`, `genre_id → genres.id` |
 | `categories` | Довідник категорій | `id`, `name` | `id` | — |
