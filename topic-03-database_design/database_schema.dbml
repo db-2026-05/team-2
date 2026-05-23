@@ -1,0 +1,218 @@
+Table books {
+  Note: 'MVP таблиця. Основна інформація про книги бібліотеки. Авторів книг можна визначити за звязком many to many по таблицям books_authors та athors'
+
+  id               int          [pk, increment]
+  title            varchar(255) [not null]
+  isbn             varchar(17)  [unique, not null]
+  publication_year smallint     [check: `publication_year BETWEEN 1000 AND 2100`]
+}
+
+Table book_genres {
+  Note: 'Final таблиця. Зв’язок багато-до-багатьох між книгами та жанрами.'
+
+  book_id  int [not null, ref: > books.id]
+  genre_id int [not null, ref: > genres.id]
+
+  indexes {
+    (book_id, genre_id) [pk]
+  }
+}
+
+Table genres {
+  Note: 'Final таблиця. Довідник жанрів книг.'
+
+  id   int          [pk, increment]
+  name varchar(255) [not null]
+}
+
+Table authors {
+  Note: 'MVP таблиця. Автори книг.'
+
+  id         int         [pk, increment]
+  first_name varchar(50) [not null]
+  last_name  varchar(50) [not null]
+}
+
+Table books_authors {
+  Note: 'MVP таблиця. Зв’язок багато-до-багатьох між книгами та авторами.'
+
+  book_id   int [ref: > books.id]
+  author_id int [ref: > authors.id]
+
+  indexes {
+    (book_id, author_id) [pk]
+  }
+}
+
+Table categories {
+  Note: 'Final таблиця. Довідник категорій книг.'
+
+  id   int         [pk, increment]
+  name varchar(40) [not null, unique]
+}
+
+Table book_categories {
+  Note: 'Final таблиця. Зв’язок багато-до-багатьох між книгами та категоріями.'
+
+  book_id     int [ref: > books.id]
+  category_id int [ref: > categories.id]
+
+  indexes {
+    (book_id, category_id) [pk]
+  }
+}
+
+Table members {
+  Note: 'MVP таблиця. Читачі бібліотеки та їх контактна інформація.'
+
+  id            int          [pk, increment]
+  first_name    varchar(50)  [not null]
+  last_name     varchar(50)  [not null]
+  email         varchar(100) [not null, unique]
+  login         varchar(100) [not null, unique]
+  password_hash varchar(64) [not null]
+  phone         varchar(20)  [not null]
+  address       varchar(150) [not null]
+  
+  checks {
+    `char_length(login) >= 3` [name: 'chk_login_length']
+
+    `char_length(phone) >= 10` [name: 'chk_phone_length']
+
+    `char_length(address) >= 5` [name: 'chk_address_length']
+
+    `char_length(password_hash) >= 64` [name: 'chk_password_hash_length']
+  }
+}
+
+Table copy_statuses {
+  Note: 'Final таблиця. Довідник статусів фізичних примірників книг.'
+
+  id   int         [pk, increment]
+  name varchar(15) [not null, unique]
+}
+
+Table book_copies {
+  Note: 'Final таблиця. Облік фізичних примірників книг.'
+
+  id             int         [pk, increment]
+  book_id        int         [ref: > books.id, not null]
+  barcode        varchar(30) [not null, unique]
+  copy_status_id int         [ref: > copy_statuses.id, not null]
+}
+
+Table borrowing_statuses {
+  Note: 'Final таблиця. Довідник статусів видачі книг.'
+
+  id   int         [pk, increment]
+  name varchar(15) [not null, unique]
+}
+
+Table borrowings {
+  Note: 'MVP таблиця. Операції видачі та повернення книг читачами. Також тут можна відслідкуівти reading history'
+
+  id             int       [pk, increment]
+  member_id      int       [not null, ref: > members.id]
+  borrowing_date timestamp [not null, default: `now()`]
+  due_date       timestamp [not null, check: `due_date > borrowing_date`]
+  return_date    timestamp [check: `return_date IS NULL OR return_date >= borrowing_date`]
+  status_id      int       [not null, ref: > borrowing_statuses.id]
+  created_at  timestamp [not null, default: `now()`]
+  updated_at  timestamp [not null, default: `now()`]
+  
+  checks  {
+    `due_date > borrowing_date`                                [name: 'chk_due_after_borrow']
+    `return_date IS NULL OR return_date >= borrowing_date`     [name: 'chk_return_after_borrow']
+  }
+  
+  indexes {
+  (member_id, status_id) [name: 'idx_borrowings_member_status']
+  (member_id) [name: 'idx_borrowings_member']
+ }
+}
+
+Table borrowing_items {
+  Note: 'Final таблиця. Конкретні примірники книг у межах однієї видачі. Реалізація видачі багатьох примірників книг однією квитанцією'
+
+  id             int [pk, increment]
+  borrowing_id   int [not null, ref: > borrowings.id]
+  book_copy_id   int [not null, ref: > book_copies.id]
+
+  indexes {
+    (book_copy_id) [name: 'idx_borrowing_items_copy']
+    (borrowing_id, book_copy_id) [unique, name: 'uq_borrowing_copy']
+  }
+
+}
+
+Table reservation_statuses {
+  Note: 'Final таблиця. Довідник статусів резервування книг.'
+
+  id   int         [pk, increment]
+  name varchar(15) [not null, unique]
+}
+
+Table reservations {
+  Note: 'Final таблиця. Резервування книг читачами.'
+
+  id               int       [pk, increment]
+  member_id        int       [ref: > members.id, not null]
+  reservation_date timestamp [not null, default: `now()`]
+  status_id        int       [ref: > reservation_statuses.id, not null]
+  created_at  timestamp [not null, default: `now()`]
+  updated_at  timestamp [not null, default: `now()`]
+  
+  indexes {
+  (member_id, status_id) [name: 'idx_reservations_member_status']
+  (member_id) [name: 'idx_reservations_member']
+ }
+}
+
+Table reservation_items {
+  Note: 'Final таблиця. Книги або конкретні примірники, включені до резервування.  book_copy_id може писатися null тому що система спочатку резервує просто книгу, а коли є на складі конкретна копія книги то вона призначається і це гарантується на рівні бізнеслогіки додатку'
+
+  id                  int [pk, increment]
+  reservation_id      int [not null, ref: > reservations.id]
+  book_id             int [not null, ref: > books.id]
+  book_copy_id        int [null, ref: > book_copies.id]
+
+  indexes {
+    (reservation_id, book_id) [name: 'idx_res_items_res_book']
+	(book_id) [name: 'idx_res_items_book']
+    (book_copy_id) [name: 'idx_res_items_copy']
+  }
+}
+
+Table book_reviews {
+  Note: 'Final таблиця. Відгуки та оцінки книг читачами.'
+
+  id          int       [pk, increment]
+  member_id   int       [ref: > members.id, not null]
+  book_id     int       [ref: > books.id, not null]
+  review_text text
+  created_at  timestamp [not null, default: `now()`]
+  rate        smallint  [not null, check: `rate BETWEEN 1 AND 5`]
+
+  indexes {
+    (member_id, book_id) [unique, name: 'uq_one_review_per_book']
+  }
+}
+
+TableGroup "MVP Tables" {
+  members
+  books
+  borrowings
+}
+
+TableGroup "Final Version Tables" {
+  genres
+  book_genres
+  categories
+  book_categories
+  copy_statuses
+  book_copies
+  reservation_statuses
+  reservations
+  reservation_items
+  book_reviews
+}
