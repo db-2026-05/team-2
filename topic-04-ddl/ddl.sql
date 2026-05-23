@@ -160,6 +160,7 @@ CREATE TABLE "members" (
 );
 
 
+
 -- =========================================================
 -- AUTHOR: Shmyhol Evhenii
 -- TABLE: copy_statuses
