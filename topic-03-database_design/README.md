@@ -1,5 +1,5 @@
 # 🗄️ Database Design — Library Management System
-
+[Відео](https://1drv.ms/v/c/600f986daee1f210/IQBYOj7j_RQ-TZU36W8NiZxAAYlbTi_wJGKxg_9FnmQ97TI?e=3pbfOp)
 ## Опис структури бази даних
 
 ### MVP таблиці
