@@ -47,7 +47,7 @@ CREATE TABLE "genres" (
 -- fantasy, detective, sci-fi, romance тощо.
 -- Одна книга може мати кілька жанрів.
 -- =========================================================
-CREATE TABLE "book_genre" (
+CREATE TABLE "books_genres" (
   "book_id" int NOT NULL,   -- Посилання на книгу
   "genre_id" int NOT NULL,  -- Посилання на жанр
 
@@ -330,16 +330,16 @@ CREATE TABLE "book_reviews" (
 -- автоматично видаляються її зв’язки з жанрами.
 -- FK гарантує, що зв’язок genre-book
 -- може існувати лише для існуючої книги.
-ALTER TABLE "book_genre" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE;
+ALTER TABLE "books_genres" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE;
 
 -- При видаленні жанру
 -- автоматично видаляються його зв’язки з книгами.
 -- FK гарантує, що книга може бути прив’язана
 -- лише до існуючого жанру.
-ALTER TABLE "book_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genres" ("id") ON DELETE CASCADE;
+ALTER TABLE "books_genres" ADD FOREIGN KEY ("genre_id") REFERENCES "genres" ("id") ON DELETE CASCADE;
 
 -- Пошук книг за жанром
-CREATE INDEX "idx_book_genre_genre_id" ON "book_genre" ("genre_id");
+CREATE INDEX "idx_book_genre_genre_id" ON "books_genres" ("genre_id");
 
 
 -- =========================================================
