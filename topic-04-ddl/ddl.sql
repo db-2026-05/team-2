@@ -36,7 +36,7 @@ CREATE TABLE "genres" (
 
 -- =========================================================
 -- AUTHOR: Gerlib Andrii
--- TABLE: book_genre
+-- TABLE: bookі_genreі
 -- Зв’язок many-to-many між книгами та жанрами.
 -- Бізнес-логіка:
 -- Реалізує можливість прив’язки кількох жанрів до книги
@@ -339,7 +339,7 @@ ALTER TABLE "books_genres" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id")
 ALTER TABLE "books_genres" ADD FOREIGN KEY ("genre_id") REFERENCES "genres" ("id") ON DELETE CASCADE;
 
 -- Пошук книг за жанром
-CREATE INDEX "idx_book_genre_genre_id" ON "books_genres" ("genre_id");
+CREATE INDEX "idx_books_genres_genre_id" ON "books_genres" ("genre_id");
 
 
 -- =========================================================

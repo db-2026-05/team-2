@@ -26,7 +26,7 @@ DDL-скрипт створює таблиці, первинні ключі, з�
 |---|---|
 | `books` | Основна бібліографічна інформація про книги |
 | `genre` | Довідник жанрів книг |
-| `book_genre` | Зв’язок many-to-many між книгами та жанрами |
+| `books_genres` | Зв’язок many-to-many між книгами та жанрами |
 | `authors` | Автори книг |
 | `book_authors` | Зв’язок many-to-many між книгами та авторами |
 | `categories` | Довідник організаційних категорій книг |
@@ -70,7 +70,7 @@ DDL-скрипт створює таблиці, первинні ключі, з�
 
 ---
 
-### `book_genre`
+### `books_genres`
 
 Проміжна таблиця для зв’язку many-to-many між книгами та жанрами.
 
@@ -296,7 +296,7 @@ Additional rule: `uq_one_review_per_book` дозволяє одному чита
 | `book_reviews` | `member_id` | `members.id` | CASCADE | При видаленні читача видаляються його відгуки |
 | `book_reviews` | `book_id` | `books.id` | CASCADE | При видаленні книги видаляються її відгуки |
 
-> Note: у таблицях `book_genre`, `book_authors`, `book_categories` зв’язки many-to-many оголошені всередині `CREATE TABLE` як `DEFERRABLE INITIALLY IMMEDIATE`.
+> Note: у таблицях `books_genres`, `book_authors`, `book_categories` зв’язки many-to-many оголошені всередині `CREATE TABLE` як `DEFERRABLE INITIALLY IMMEDIATE`.
 
 ---
 
@@ -325,7 +325,7 @@ Additional rule: `uq_one_review_per_book` дозволяє одному чита
 | `idx_borrowing_items_copy_id` | `borrowing_items` | `book_copy_id` | Пошук інформації про примірник |
 | `idx_reservations_member_id` | `reservations` | `member_id` | Пошук резервувань читача |
 | `idx_reservations_status_id` | `reservations` | `status_id` | Пошук резервувань за статусом |
-| `idx_book_genre_genre_id` | `book_genre` | `genre_id` | Пошук книг за жанром |
+| `idx_books_genres_genre_id` | `books_genres` | `genre_id` | Пошук книг за жанром |
 | `idx_book_authors_author_id` | `book_authors` | `author_id` | Пошук книг автора |
 | `idx_book_categories_cat_id` | `book_categories` | `category_id` | Пошук книг за категорією |
 | `idx_book_copies_book_id` | `book_copies` | `book_id` | Пошук усіх примірників книги |
@@ -385,7 +385,7 @@ README було адаптовано відповідно до актуальн�
 
 - `books`
 - `genre`
-- `book_genre`
+- `books_genres`
 - `authors`
 - `book_authors`
 - `categories`
