@@ -7,7 +7,7 @@ Table books {
   publication_year smallint     [check: `publication_year BETWEEN 1000 AND 2100`]
 }
 
-Table book_genres {
+Table books_genres {
   Note: 'Final таблиця. Зв’язок багато-до-багатьох між книгами та жанрами.'
 
   book_id  int [not null, ref: > books.id]
@@ -206,7 +206,7 @@ TableGroup "MVP Tables" {
 
 TableGroup "Final Version Tables" {
   genres
-  book_genres
+  books_genres
   categories
   book_categories
   copy_statuses
