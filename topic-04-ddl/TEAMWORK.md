@@ -1,7 +1,7 @@
 # TEAMWORK - Topic 04 (SQL DDL)
 
 ## Склад команди
-- Команда: Library Management System
+- Команда: 2
 - Варіант предметної області: локальна бібліотека / Library Management System
 
 ## Таблиця внесків
