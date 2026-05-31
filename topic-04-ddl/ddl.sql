@@ -551,5 +551,6 @@ CREATE INDEX "idx_reservations_status_id" ON "reservations" ("status_id");
 -- Пошук книг у конкретному резервуванні
 CREATE INDEX "idx_res_items_res_book" ON "reservation_items" ("reservation_id", "book_id");
 
--- Пошук резервувань фізичного примірника
-CREATE INDEX "idx_reservation_items_copy_id" ON "reservation_items" ("book_copy_id");
+-- Пошук резервувань фізичного примірника та унеможливлювання створення дублювання 
+-- резервування однієї книги кілька разів в одному резерві
+CREATE UNIQUE INDEX "uq_reservation_book" ON "reservation_items" ("reservation_id", "book_id");
