@@ -266,7 +266,7 @@ CREATE TABLE "borrowing_items" (
 
 
 -- =========================================================
--- AUTHOR: Viktor Bozhko
+-- AUTHOR: Viktor Bozhko 
 -- TABLE: reservation_statuses
 -- Статуси резервування книг.
 -- Бізнес-логіка:
