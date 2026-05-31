@@ -360,6 +360,9 @@ ALTER TABLE "books_genres" ADD FOREIGN KEY ("genre_id") REFERENCES "genres" ("id
 -- Пошук книг за жанром
 CREATE INDEX "idx_books_genres_genre_id" ON "books_genres" ("genre_id");
 
+-- Пошук книг за назвою
+CREATE INDEX "idx_books_title" ON "books" ("title");
+
 
 -- =========================================================
 -- AUTHOR: Krysa Oleksandr
