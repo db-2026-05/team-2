@@ -18,8 +18,8 @@ Table genres {
   name varchar(255) [not null, unique]
 }
 
-Table book_genre {
-  Note: 'Зв’язок many-to-many між книгами та жанрами.'
+Table books_genres {
+  Note: 'Final таблиця. Зв’язок багато-до-багатьох між книгами та жанрами.'
 
   book_id  int [not null, ref: > books.id]
   genre_id int [not null, ref: > genres.id]
@@ -179,8 +179,8 @@ Table reservation_items {
   book_copy_id     int [ref: > book_copies.id]
 
   indexes {
-    (reservation_id, book_id) [name: 'idx_res_items_res_book']
-    (book_id) [name: 'idx_res_items_book']
+    (reservation_id, book_id) [unique, name: 'uq_reservation_book']
+	  (book_id) [name: 'idx_res_items_book']
     (book_copy_id) [name: 'idx_res_items_copy']
   }
 }
@@ -213,6 +213,7 @@ TableGroup "Core Tables" {
 
 TableGroup "Reference Tables" {
   genres
+  books_genres
   categories
   copy_statuses
   borrowing_statuses
