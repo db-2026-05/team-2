@@ -25,7 +25,7 @@ DDL-скрипт створює таблиці, первинні ключі, з�
 | Table | Purpose |
 |---|---|
 | `books` | Основна бібліографічна інформація про книги |
-| `genre` | Довідник жанрів книг |
+| `genres` | Довідник жанрів книг |
 | `books_genres` | Зв’язок many-to-many між книгами та жанрами |
 | `authors` | Автори книг |
 | `book_authors` | Зв’язок many-to-many між книгами та авторами |
@@ -59,7 +59,7 @@ DDL-скрипт створює таблиці, первинні ключі, з�
 
 ---
 
-### `genre`
+### `genres`
 
 Довідник жанрів для класифікації книг за змістом або літературним типом.
 
@@ -158,7 +158,7 @@ Primary key: (`book_id`, `category_id`).
 | `id` | `INT` | PK, identity | Ідентифікатор статусу |
 | `name` | `varchar(15)` | UNIQUE, NOT NULL | Назва статусу |
 
-Default values: `available`, `borrowed`, `reserved`, `lost`.
+Default values: `available`, `borrowed`, `damaged`, `reserved`, `lost`.
 
 ---
 
@@ -342,7 +342,7 @@ DDL додає початкові значення у довідники:
 
 ```sql
 INSERT INTO "copy_statuses" ("name")
-VALUES ('available'), ('borrowed'), ('reserved'), ('lost');
+VALUES ('available'), ('borrowed'), ('damaged'), ('reserved'), ('lost');
 
 INSERT INTO "borrowing_statuses" ("name")
 VALUES ('active'), ('returned'), ('overdue');
@@ -384,7 +384,7 @@ Video may be submitted through Zoom recording, Google Drive, or an unlisted YouT
 README було адаптовано відповідно до актуального DDL-файлу. Нижче наведено таблиці, виявлені у поточному DDL:
 
 - `books`
-- `genre`
+- `genres`
 - `books_genres`
 - `authors`
 - `book_authors`
@@ -412,8 +412,9 @@ README було адаптовано відповідно до актуальн�
 
 #### `copy_statuses`
 - `available` — примірник доступний для видачі
-- `borrowed` — примірник видан
+- `borrowed` — примірник виданий
 - `damaged` — примірник пошкоджений
+- `reserved` — примірник зарезервовано
 - `lost` — примірник загублений
 
 #### `reservation_statuses`

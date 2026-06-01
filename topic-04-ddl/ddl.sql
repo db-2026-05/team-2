@@ -152,7 +152,7 @@ CREATE TABLE "members" (
   "login" varchar(100) UNIQUE NOT NULL,                  -- Логін користувача
   "password_hash" varchar(128) NOT NULL,                 -- Хеш пароля
   "phone" varchar(20) NOT NULL,                          -- Телефон
-  "address" varchar(150) NOT NULL                        -- Адреса
+  "address" varchar(150) NOT NULL,                       -- Адреса
   CONSTRAINT "chk_login_length" CHECK (char_length(login) >= 3),
   CONSTRAINT "chk_phone_length" CHECK (char_length(phone) >= 10),
   CONSTRAINT "chk_address_length" CHECK (char_length(address) >= 5),
@@ -252,7 +252,7 @@ CREATE TABLE "borrowings" (
 -- як дата створення операції видачі.
 --
 -- Перевірка того, що due_date > borrowing_date,
--- реалізується на рівні application layer або через trigger,
+-- реалізується на рівні application layer,
 -- оскільки CHECK constraint не може звертатись
 -- до колонок іншої таблиці.
 -- =========================================================
@@ -408,6 +408,7 @@ VALUES
   ('available'),
   ('borrowed'),
   ('reserved'),
+  ('damaged'),
   ('lost');
 
 -- Не дозволяє видалити книгу,
@@ -551,6 +552,10 @@ CREATE INDEX "idx_reservations_status_id" ON "reservations" ("status_id");
 -- Пошук книг у конкретному резервуванні
 CREATE INDEX "idx_res_items_res_book" ON "reservation_items" ("reservation_id", "book_id");
 
--- Пошук резервувань фізичного примірника та унеможливлювання створення дублювання 
--- резервування однієї книги кілька разів в одному резерві
+-- Пошук резервувань фізичного примірника та унеможливлювання створення дублювання.
+-- Одне видання (book_id) фігурує в межах одного резервування лише один раз:
+-- модель не передбачає quantity, тому повторні примірники того самого видання
+-- у цій схемі не виражаються дублюванням рядків.
+-- book_copy_id призначається пізніше (бізнес-логіка), тому унікальність
+-- будується по (reservation_id, book_id), а не по примірнику.
 CREATE UNIQUE INDEX "uq_reservation_book" ON "reservation_items" ("reservation_id", "book_id");

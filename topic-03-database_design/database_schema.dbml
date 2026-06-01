@@ -177,8 +177,8 @@ Table reservation_items {
   book_copy_id        int [null, ref: > book_copies.id]
 
   indexes {
-    (reservation_id, book_id) [name: 'idx_res_items_res_book']
-	(book_id) [name: 'idx_res_items_book']
+    (reservation_id, book_id) [unique, name: 'uq_reservation_book']
+	  (book_id) [name: 'idx_res_items_book']
     (book_copy_id) [name: 'idx_res_items_copy']
   }
 }
