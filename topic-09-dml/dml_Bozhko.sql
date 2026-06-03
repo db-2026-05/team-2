@@ -14,13 +14,7 @@
 -- Видалення статусів не виконується,
 -- оскільки вони використовуються у reservations
 -- та можуть порушити цілісність даних.
-
--- Оновлення статусу fulfilled -> completed
-UPDATE reservation_statuses
-SET name = 'completed'
-WHERE name = 'fulfilled';
-
-
+-- Таблиця є довідником і не змінюється в межах DML сценаріїв.
 
 -- =========================================================
 -- reservations
@@ -76,7 +70,6 @@ UPDATE reservation_items
 SET book_copy_id = 6
 WHERE reservation_id = 1
   AND book_id = 1;
-
 
 
 -- =========================================================
