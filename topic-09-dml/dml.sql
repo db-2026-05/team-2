@@ -117,6 +117,50 @@ VALUES
   ('Walter',     'Isaacson'),
   ('Removable',  'Author');
 
+-- Krysa Oleksandr: довідник категорій книг.
+INSERT INTO "categories" ("name") VALUES
+('Children''s Literature'),
+('Educational & Textbooks'),
+('Rare & Antique Books'),
+('Local History & Lore'),
+('Scientific & Research'),
+('Art & Photo Albums'),
+('Periodicals & Magazines'),
+('Encyclopedias & Reference'),
+('Banned & Restricted Books'),
+('Donated & Gifted Collection'),
+('Temporary Test Category');
+
+-- Krysa Oleksandr: прив’язка книг з категоріями.
+-- Для першої книги  дві категорії, щоб показати many-to-many.
+INSERT INTO "book_categories" ("book_id", "category_id") VALUES
+(1, 2),  
+(1, 8),  
+(2, 1),  
+(3, 3),  
+(4, 4),  
+(5, 5),  
+(6, 2),  
+(7, 6),  
+(8, 7),  
+(9, 9),  
+(10, 10);
+
+-- Krysa Oleksandr: прив’язка книг до авторів. Для книги №5 два автори, 
+-- щоб реалізувати вимогу щодо співавторства.
+INSERT INTO "book_authors" ("book_id", "author_id") VALUES
+(1, 1),  
+(2, 2),  
+(3, 3),  
+(4, 4),  
+(5, 5),  
+(5, 6),  -- Оце якраз співавторство
+(6, 7),  
+(7, 8),  
+(8, 9),  
+(9, 10), 
+(10, 1);
+
 -- Shmyhol: читачі бібліотеки.
 -- Читач id=11 (login 'removable') — службовий запис для DELETE у ФАЗІ 2.
 INSERT INTO "members"
@@ -249,9 +293,14 @@ VALUES
   (9,  9,  'Average overall experience.',            CURRENT_TIMESTAMP, 3),
   (10, 10, 'Highly recommended.',                     CURRENT_TIMESTAMP, 5);
 
+
+
   -- ################################################################
 -- ФАЗА 2. UPDATE / DELETE
 -- ################################################################
+-- ПРИМІТКА:
+-- НЕМАЄ UPDATE ДЛЯ ТАБЛИЦЬ ЗВ'ЯЗКУ.
+-- Робити UPDATE у таблицях багатьох до багатьох немає сенсу з боку бізнес-логіки програми. 
 
 -- ----------------------------------------------------------------
 -- Gerlib: books / genres / books_genres / authors
@@ -306,6 +355,27 @@ WHERE "first_name" = 'Yuval Noah';
 -- автора id=11 ('Removable Author').
 DELETE FROM "authors"
 WHERE "first_name" = 'Removable' AND "last_name" = 'Author';
+
+-- ----------------------------------------------------------------
+-- Krysa: categories / book_categories / book_authors
+-- ----------------------------------------------------------------
+
+-- categories: зміна назви категорії (наприклад, адмін вирішив уточнити назву)
+UPDATE "categories"
+SET "name" = 'Rare Books & Manuscripts'
+WHERE "name" = 'Rare & Antique Books';
+
+-- categories: видалення тестової категорії, яку ніхто не використовує (чисте видалення)
+DELETE FROM "categories"
+WHERE "name" = 'Temporary Test Category';
+
+-- categories: прибрати книгу з категорії
+DELETE FROM "book_categories"
+WHERE "book_id" = 9 AND "category_id" = 9;
+
+-- book_authors: видалення автора з книги
+DELETE FROM "book_authors"
+WHERE "book_id" = 10 AND "author_id" = 1;
 
 -- ----------------------------------------------------------------
 -- Shmyhol: members / book_copies
