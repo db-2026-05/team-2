@@ -1,4 +1,5 @@
 -- borrowing_statuses
+-- Статус самого borrowing
 INSERT INTO borrowing_statuses (name) VALUES
 ('active'),
 ('returned'),
@@ -13,8 +14,11 @@ INSERT INTO borrowing_statuses (name) VALUES
 
 
 -- borrowings
+-- Список всіх видач в бібліотеці, користувач може мати декілька, як і різні статуси
 INSERT INTO borrowings (member_id, borrowing_date, status_id) VALUES
 (1, '2025-01-10 10:15:00', 2),
+(1, '2025-01-10 10:15:00', 4),
+(2, '2025-01-10 10:15:00', 2),
 (2, '2025-01-15 14:20:00', 1),
 (3, '2025-02-01 09:00:00', 3),
 (4, '2025-02-10 16:45:00', 2),
@@ -27,6 +31,7 @@ INSERT INTO borrowings (member_id, borrowing_date, status_id) VALUES
 
 
 -- borrowing_items
+-- В одній видачі у користувача може бути декілька книг
 INSERT INTO borrowing_items (
     borrowing_id,
     book_copy_id,
