@@ -9,7 +9,7 @@
 -- borrowing_statuses.name = 'active').
 -- =========================================================
 
-CREATE VIEW "vw_active_members" AS
+CREATE OR REPLACE VIEW "vw_active_members" AS
 SELECT DISTINCT 
         m.id AS member_id,
         (m.first_name || ' ' || m.last_name) AS full_name,
