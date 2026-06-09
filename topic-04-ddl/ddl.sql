@@ -83,13 +83,7 @@ CREATE TABLE "book_authors" (
   "book_id" int NOT NULL,    -- Посилання на книгу
   "author_id" int NOT NULL,  -- Посилання на автора
 
-  PRIMARY KEY ("book_id", "author_id"),
-
-  FOREIGN KEY ("book_id") REFERENCES "books" ("id")
-    DEFERRABLE INITIALLY IMMEDIATE,
-
-  FOREIGN KEY ("author_id") REFERENCES "authors" ("id")
-    DEFERRABLE INITIALLY IMMEDIATE
+  PRIMARY KEY ("book_id", "author_id")
 );
 
 
@@ -125,13 +119,7 @@ CREATE TABLE "book_categories" (
   "book_id" int NOT NULL,       -- Посилання на книгу
   "category_id" int NOT NULL,   -- Посилання на категорію
 
-  PRIMARY KEY ("book_id", "category_id"),
-
-  FOREIGN KEY ("book_id") REFERENCES "books" ("id")
-    DEFERRABLE INITIALLY IMMEDIATE,
-
-  FOREIGN KEY ("category_id") REFERENCES "categories" ("id")
-    DEFERRABLE INITIALLY IMMEDIATE
+  PRIMARY KEY ("book_id", "category_id")
 );
 
 
@@ -152,7 +140,9 @@ CREATE TABLE "members" (
   "login" varchar(100) UNIQUE NOT NULL,                  -- Логін користувача
   "password_hash" varchar(255) NOT NULL,                 -- Хеш пароля
   "phone" varchar(20) NOT NULL,                          -- Телефон
-  "address" varchar(255) NOT NULL,                       -- Адреса
+  "address" varchar(255) NOT NULL                        -- Адреса
+  "created_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Дата реєстрації
+  "is_active" boolean NOT NULL DEFAULT true,             -- Статус активності читача
   CONSTRAINT "chk_login_length" CHECK (char_length(login) >= 3),
   CONSTRAINT "chk_phone_length" CHECK (char_length(phone) >= 10),
   CONSTRAINT "chk_address_length" CHECK (char_length(address) >= 5),
@@ -373,23 +363,23 @@ CREATE INDEX "idx_books_title" ON "books" ("title");
 -- автоматично видаляються її зв’язки з авторами.
 -- FK гарантує, що зв’язок author-book
 -- існує лише для реальної книги.
-ALTER TABLE "book_authors" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE;
+ALTER TABLE "book_authors" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
 -- При видаленні автора
 -- автоматично видаляються його зв’язки з книгами.
 -- FK гарантує, що книга посилається
 -- лише на існуючого автора.
-ALTER TABLE "book_authors" ADD FOREIGN KEY ("author_id") REFERENCES "authors" ("id") ON DELETE CASCADE;
+ALTER TABLE "book_authors" ADD FOREIGN KEY ("author_id") REFERENCES "authors" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
 -- При видаленні книги
 -- автоматично видаляються її зв’язки з категоріями.
 -- FK гарантує цілісність категоризації книги.
-ALTER TABLE "book_categories" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE;
+ALTER TABLE "book_categories" ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
 -- При видаленні категорії
 -- автоматично видаляються її зв’язки з книгами.
 -- FK гарантує, що категорія існує у довіднику.
-ALTER TABLE "book_categories" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON DELETE CASCADE;
+ALTER TABLE "book_categories" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
 -- Пошук книг конкретного автора
 CREATE INDEX "idx_book_authors_author_id" ON "book_authors" ("author_id");
