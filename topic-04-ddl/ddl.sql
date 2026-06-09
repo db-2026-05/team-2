@@ -140,7 +140,7 @@ CREATE TABLE "members" (
   "login" varchar(100) UNIQUE NOT NULL,                  -- Логін користувача
   "password_hash" varchar(255) NOT NULL,                 -- Хеш пароля
   "phone" varchar(20) NOT NULL,                          -- Телефон
-  "address" varchar(255) NOT NULL                        -- Адреса
+  "address" varchar(255) NOT NULL,                        -- Адреса
   "created_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Дата реєстрації
   "is_active" boolean NOT NULL DEFAULT true,             -- Статус активності читача
   CONSTRAINT "chk_login_length" CHECK (char_length(login) >= 3),
