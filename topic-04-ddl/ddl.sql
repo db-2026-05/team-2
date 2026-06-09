@@ -150,7 +150,7 @@ CREATE TABLE "members" (
   "last_name" varchar(50) NOT NULL,                      -- Прізвище читача
   "email" varchar(100) UNIQUE NOT NULL,                  -- Email користувача
   "login" varchar(100) UNIQUE NOT NULL,                  -- Логін користувача
-  "password_hash" varchar(128) NOT NULL,                 -- Хеш пароля
+  "password_hash" varchar(255) NOT NULL,                 -- Хеш пароля
   "phone" varchar(20) NOT NULL,                          -- Телефон
   "address" varchar(150) NOT NULL,                       -- Адреса
   CONSTRAINT "chk_login_length" CHECK (char_length(login) >= 3),
