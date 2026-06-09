@@ -542,6 +542,12 @@ CREATE INDEX "idx_reservations_status_id" ON "reservations" ("status_id");
 -- Пошук книг у конкретному резервуванні
 CREATE INDEX "idx_res_items_res_book" ON "reservation_items" ("reservation_id", "book_id");
 
+-- Пошук усіх відгуків на конкретну книгу
+CREATE INDEX "idx_book_reviews_book_id" ON "book_reviews" ("book_id");
+
+-- Пошук резервувань за конкретним фізичним примірником
+CREATE INDEX "idx_reservation_items_copy_id" ON "reservation_items" ("book_copy_id");
+
 -- Пошук резервувань фізичного примірника та унеможливлювання створення дублювання.
 -- Одне видання (book_id) фігурує в межах одного резервування лише один раз:
 -- модель не передбачає quantity, тому повторні примірники того самого видання
