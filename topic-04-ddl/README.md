@@ -66,7 +66,7 @@ DDL-скрипт створює таблиці, первинні ключі, з�
 | Field | Type | Constraints | Description |
 |---|---|---|---|
 | `id` | `INT` | PK, identity | Ідентифікатор жанру |
-| `name` | `varchar(255)` | UNIQUE, NOT NULL | Назва жанру |
+| `name` | `varchar(100)` | UNIQUE, NOT NULL | Назва жанру |
 
 ---
 
@@ -143,9 +143,11 @@ Primary key: (`book_id`, `category_id`).
 | `last_name` | `varchar(50)` | NOT NULL | Прізвище читача |
 | `email` | `varchar(100)` | UNIQUE, NOT NULL | Email |
 | `login` | `varchar(100)` | UNIQUE, NOT NULL | Логін |
-| `password_hash` | `varchar(128)` | NOT NULL | Хеш пароля |
+| `password_hash` | `varchar(255)` | NOT NULL | Хеш пароля |
 | `phone` | `varchar(20)` | NOT NULL | Телефон |
-| `address` | `varchar(150)` | NOT NULL | Адреса |
+| `address` | `varchar(255)` | NOT NULL | Адреса |
+| `created_at` | `timestamptz` | NOT NULL, DEFAULT `CURRENT_TIMESTAMP` | Дата реєстрації читача |
+| `is_active` | `boolean` | NOT NULL, DEFAULT `true` | Чи активний читач |
 
 ---
 
@@ -196,7 +198,7 @@ Default values: `active`, `returned`, `overdue`.
 |---|---|---|---|
 | `id` | `INT` | PK, identity | Ідентифікатор видачі |
 | `member_id` | `int` | FK → `members.id`, NOT NULL | Читач, який взяв книги |
-| `borrowing_date` | `timestamp` | NOT NULL, DEFAULT `CURRENT_TIMESTAMP` | Дата видачі |
+| `borrowing_date` | `timestamptz` | NOT NULL, DEFAULT `CURRENT_TIMESTAMP` | Дата видачі |
 | `status_id` | `int` | FK → `borrowing_statuses.id`, NOT NULL | Статус видачі |
 
 ---
@@ -210,8 +212,8 @@ Default values: `active`, `returned`, `overdue`.
 | `id` | `INT` | PK, identity | Ідентифікатор позиції видачі |
 | `borrowing_id` | `int` | FK → `borrowings.id`, NOT NULL | Посилання на видачу |
 | `book_copy_id` | `int` | FK → `book_copies.id`, NOT NULL | Виданий примірник |
-| `return_date` | `timestamp` | nullable | Фактична дата повернення |
-| `due_date` | `timestamp` | NOT NULL | Кінцева дата повернення |
+| `return_date` | `timestamptz` | nullable | Фактична дата повернення |
+| `due_date` | `timestamptz` | NOT NULL | Кінцева дата повернення |
 
 Additional rules:
 
@@ -241,7 +243,7 @@ Default values: `pending`, `fulfilled`, `cancelled`.
 |---|---|---|---|
 | `id` | `INT` | PK, identity | Ідентифікатор резервування |
 | `member_id` | `int` | FK → `members.id`, NOT NULL | Читач, який створив резервування |
-| `reservation_date` | `timestamp` | NOT NULL, DEFAULT `CURRENT_TIMESTAMP` | Дата резервування |
+| `reservation_date` | `timestamptz` | NOT NULL, DEFAULT `CURRENT_TIMESTAMP` | Дата резервування |
 | `status_id` | `int` | FK → `reservation_statuses.id`, NOT NULL | Статус резервування |
 
 ---
@@ -271,7 +273,7 @@ Business rule: резервування створюється на рівні �
 | `member_id` | `int` | FK → `members.id`, NOT NULL | Автор відгуку |
 | `book_id` | `int` | FK → `books.id`, NOT NULL | Книга |
 | `review_text` | `text` | nullable | Текст відгуку |
-| `created_at` | `timestamp` | NOT NULL, DEFAULT `CURRENT_TIMESTAMP` | Дата створення відгуку |
+| `created_at` | `timestamptz` | NOT NULL, DEFAULT `CURRENT_TIMESTAMP` | Дата створення відгуку |
 | `rate` | `smallint` | NOT NULL, CHECK `1..5` | Оцінка книги |
 
 Additional rule: `uq_one_review_per_book` дозволяє одному читачу залишити лише один відгук на одну книгу.
@@ -296,7 +298,7 @@ Additional rule: `uq_one_review_per_book` дозволяє одному чита
 | `book_reviews` | `member_id` | `members.id` | CASCADE | При видаленні читача видаляються його відгуки |
 | `book_reviews` | `book_id` | `books.id` | CASCADE | При видаленні книги видаляються її відгуки |
 
-> Note: у таблицях `books_genres`, `book_authors`, `book_categories` зв’язки many-to-many оголошені всередині `CREATE TABLE` як `DEFERRABLE INITIALLY IMMEDIATE`.
+> Note: у таблицях `books_genres`, `book_authors`, `book_categories` зв’язки many-to-many оголошені через `ALTER TABLE ... ADD FOREIGN KEY` як `DEFERRABLE INITIALLY IMMEDIATE` (з `ON DELETE CASCADE`). Дубльовані inline-FK прибрані з `CREATE TABLE`, щоб кожне обмеження було визначене рівно один раз.
 
 ---
 
@@ -402,6 +404,22 @@ README було адаптовано відповідно до актуальн�
 - `book_reviews`
 
 Правило перевірки: не звертай уваги при перевірці на database_schema.dbml у task3, ddl змінювалась у ході роботи
+
+### 🛠️ Зміни за фідбеком ментора
+
+| # | Зміна | Таблиця / поле | Причина |
+|---|-------|----------------|---------|
+| 01 | `timestamp` → `timestamptz` | `borrowings.borrowing_date`, `borrowing_items.return_date`, `borrowing_items.due_date`, `reservations.reservation_date`, `book_reviews.created_at`, `members.created_at` | `timestamp` не зберігає часовий пояс; значення некоректно інтерпретується при зміні timezone сервера або читанні з іншого поясу. `timestamptz` робить позначки часу однозначними. |
+| 02 | `varchar(128)` → `varchar(255)` | `members.password_hash` | 128 символів покривають поточні алгоритми, але не лишають запасу на майбутні; 255 знімає обмеження на формат хешу. |
+| 03 | `varchar(255)` → `varchar(100)` | `genres.name` | 255 надмірно для назви жанру; 100 покращує консистентність і захищає від сміттєвих даних. |
+| 04 | `varchar(150)` → `varchar(255)` | `members.address` | 150 може не вмістити реальну адресу; 255 безпечніше. |
+| 05 | Додано `created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP` | `members` | Дата реєстрації — стандартна вимога (аудит, терміни членства, аналітика). |
+| 06 | Додано `is_active boolean NOT NULL DEFAULT true` | `members` | Заблокованого читача не можна видалити (`ON DELETE RESTRICT` на `borrowings`/`reservations`); прапорець дозволяє деактивацію без порушення цілісності. |
+| 07 | Прибрано дубльовані FK; лишено лише `ALTER TABLE`-версії з `DEFERRABLE INITIALLY IMMEDIATE` | `book_authors`, `book_categories` | Inline-FK у `CREATE TABLE` і `ALTER TABLE`-FK задавали одне обмеження двічі, що створювало неоднозначну поведінку. Тепер кожен FK оголошено рівно один раз із повним набором атрибутів. |
+| 08 | Додано два індекси | `idx_book_reviews_book_id` на `book_reviews(book_id)`, `idx_reservation_items_copy_id` на `reservation_items(book_copy_id)` | Пришвидшує вибірки й підтримує FK-колонки (PostgreSQL не індексує FK-колонки автоматично). |
+
+> Note: зміни не порушують логіку DML — порядок вставок незмінний, `CURRENT_TIMESTAMP` сумісний з `timestamptz`, а `DEFERRABLE INITIALLY IMMEDIATE` зберігає звичну перевірку FK після кожного запиту.
+
 
 ### Довідникові значення
 
