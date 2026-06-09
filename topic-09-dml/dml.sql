@@ -441,7 +441,7 @@ SET review_text = 'Excellent book with strong character development.',
 WHERE member_id = 4
   AND book_id = 4;
 
--- book_reviews: видалення відгуку користувача.
+-- book_reviews: видалення відгуку користувача #7.
 DELETE FROM book_reviews
 WHERE member_id = 7
   AND book_id = 7;
