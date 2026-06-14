@@ -64,6 +64,17 @@ SELECT *
 FROM books
 LIMIT 5;
 
+-- Перевірка запису та видалення даних
+BEGIN;
+
+INSERT INTO genres (name)
+VALUES ('TEMP_TEST_ADMIN_ROLE_2026');
+
+DELETE FROM genres
+WHERE name = 'TEMP_TEST_ADMIN_ROLE_2026';
+
+ROLLBACK;
+
 RESET ROLE;
 
 -- =========================================================
